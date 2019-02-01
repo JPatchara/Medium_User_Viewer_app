@@ -9,7 +9,7 @@
     <input id="usernameBox" placeholder="Username"><br/>
     <input id="passwordBox" placeholder="Password"><br/>
     <v-btn id="loginBTN">Login</v-btn><br/>
-    <!-- <router-view/> -->
+    <router-view/>
   </div>
 </template>
 
