@@ -12,14 +12,15 @@
         <span>Sign in with Facebook</span>
         <facebook-login class="button"
           appId="404147417038878"
-          @login="onLogin"
-          @logout="onLogout"
-          @get-initial-status="getUserData"
+          @login="onLoginFB"
+          @logout="onLogoutFB"
+          @get-initial-status="getFBUserData"
           style="position:absolute;opacity:0;z-index:1;
           margin-left:0em;margin-top:-1.9em;">
         </facebook-login>
       </button><br/>
-      <button id="GGloginBTN">
+      <button id="GGloginBTN"
+      @click="GoogleSignIn">
         <span><img id="GGIcon" src=".././assets/images/GGIcon.png" /></span>
         <span>Sign in with Google</span>
       </button><br/>
@@ -43,7 +44,7 @@ export default {
     facebookLogin
   },
   methods: {
-    getUserData () {
+    getFBUserData () {
       this.FB.api('/me', 'GET', { fields: 'id,name,email' },
         userInformation => {
           console.warn('get data from Facebook', userInformation)
@@ -56,14 +57,40 @@ export default {
     sdkLoaded (payload) {
       this.isConnected = payload.isConnected
       this.FB = payload.FB
-      if (this.isConnected) this.getUserData()
+      if (this.isConnected) this.getFBUserData()
     },
-    onLogin () {
+    onLoginFB () {
       this.isConnected = true
-      this.getUserData()
+      this.getFBUserData()
     },
-    onLogout () {
+    onLogoutFB () {
       this.isConnected = false
+    },
+    // CheckClicked () { console.log('GG Clicked') },
+    // GoogleGetAuth () {
+    //   this.$gAuth.getAuthCode()
+    //     .then(authCode => {
+    //     // On success
+    //       return this.$http.post('http://my-backend-server.com/auth/google', { code: authCode, redirect_uri: 'postmessage' })
+    //     })
+    //     .then(response => { })
+    //     .catch(error => { console.log(error) })
+    // },
+    GoogleSignIn () {
+      this.$gAuth.signIn()
+        .then(user => {
+          console.log('user')//, GoogleUser)
+          this.isSignIn = this.$gAuth.isAuthorized
+        })
+        .catch(error => { console.log(error) })
+    },
+    mounted () {
+      let that = this
+      let checkGauthLoad = setInterval(function () {
+        that.isInit = that.$gAuth.isInit
+        that.isSignIn = that.$gAuth.isAuthorized
+        if (that.isInit) clearInterval(checkGauthLoad)
+      }, 1000)
     }
   },
   data () {
